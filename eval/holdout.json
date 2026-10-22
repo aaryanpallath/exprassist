@@ -1,0 +1,22 @@
+[
+  {"intent": "TRUE if the agreement is a SOW or an Order Form and the amount is under 20,000.",
+   "checks": [[{"Agreement.Type": "SOW", "Agreement.Amount": 19999}, true], [{"Agreement.Type": "Order Form", "Agreement.Amount": 20000}, false], [{"Agreement.Type": "NDA", "Agreement.Amount": 10}, false]]},
+  {"intent": "Return \"Small\" if the amount is below 5,000, \"Medium\" if it is below 50,000, otherwise \"Large\".",
+   "checks": [[{"Agreement.Amount": 4999}, "Small"], [{"Agreement.Amount": 5000}, "Medium"], [{"Agreement.Amount": 50000}, "Large"]]},
+  {"intent": "The amount after discount, rounded to whole dollars. A blank discount means no discount.",
+   "checks": [[{"Agreement.Amount": 999, "Agreement.DiscountPct": 15}, 849], [{"Agreement.Amount": 1000, "Agreement.DiscountPct": null}, 1000]]},
+  {"intent": "TRUE if the counterparty name contains \"gmbh\", ignoring case.",
+   "checks": [[{"Counterparty.Name": "Globex GmbH"}, true], [{"Counterparty.Name": "Acme Corp"}, false]]},
+  {"intent": "Return \"Renewal team\" if the agreement renews automatically and the term is at least 12 months, otherwise \"Account owner\". A blank term counts as under 12 months.",
+   "checks": [[{"Agreement.AutoRenew": true, "Agreement.TermMonths": 12}, "Renewal team"], [{"Agreement.AutoRenew": true, "Agreement.TermMonths": null}, "Account owner"], [{"Agreement.AutoRenew": false, "Agreement.TermMonths": 24}, "Account owner"]]},
+  {"intent": "The signer's title in uppercase, or \"UNKNOWN\" if it is blank.",
+   "checks": [[{"Signer.Title": "Head of Legal"}, "HEAD OF LEGAL"], [{"Signer.Title": null}, "UNKNOWN"]]},
+  {"intent": "TRUE if the region is APAC or LATAM, or the counterparty is in Japan.",
+   "checks": [[{"Agreement.Region": "APAC", "Counterparty.Country": "US"}, true], [{"Agreement.Region": "NA", "Counterparty.Country": "JP"}, true], [{"Agreement.Region": "EU", "Counterparty.Country": "DE"}, false]]},
+  {"intent": "How far the amount is over the region's approval limit; 0 if it is not over.",
+   "checks": [[{"Agreement.Region": "EU", "Agreement.Amount": 160000}, 10000], [{"Agreement.Region": "EU", "Agreement.Amount": 100}, 0]]},
+  {"intent": "Return \"Priority\" for strategic customers in the NA region, otherwise \"Normal\". A blank tier is not strategic.",
+   "checks": [[{"Counterparty.Tier": "Strategic", "Agreement.Region": "NA"}, "Priority"], [{"Counterparty.Tier": "Strategic", "Agreement.Region": "EU"}, "Normal"], [{"Counterparty.Tier": null, "Agreement.Region": "NA"}, "Normal"]]},
+  {"intent": "The agreement title followed by \" (\" , the term in months, and \" months)\". Use \"open-ended\" instead of the number when the term is blank.",
+   "checks": [[{"Agreement.Title": "MSA", "Agreement.TermMonths": 24}, "MSA (24 months)"], [{"Agreement.Title": "MSA", "Agreement.TermMonths": null}, "MSA (open-ended months)"]]}
+]

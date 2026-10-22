@@ -1,0 +1,211 @@
+{
+  "summary": {
+    "model": "gemma4",
+    "set": "holdout",
+    "cases": 10,
+    "first_answer": {
+      "parses": 10,
+      "correct": 8
+    },
+    "validated": {
+      "passes_checks": 9,
+      "correct": 8,
+      "needed_retry": 1,
+      "mean_seconds": 0.6
+    }
+  },
+  "rows": [
+    {
+      "intent": "TRUE if the agreement is a SOW or an Order Form and the amount is under 20,000.",
+      "first": {
+        "text": "AND(Agreement.Type = \"SOW\", Agreement.Amount < 20000)",
+        "parsed": true,
+        "correct": true
+      },
+      "validated": {
+        "text": "AND(Agreement.Type = \"SOW\", Agreement.Amount < 20000)",
+        "tries": 1,
+        "problems": [
+          []
+        ],
+        "parsed": true,
+        "correct": true,
+        "seconds": 0.39248299999999997
+      }
+    },
+    {
+      "intent": "Return \"Small\" if the amount is below 5,000, \"Medium\" if it is below 50,000, otherwise \"Large\".",
+      "first": {
+        "text": "IF(Agreement.Amount < 5000, \"Small\", IF(Agreement.Amount < 50000, \"Medium\", \"Large\"))",
+        "parsed": true,
+        "correct": true
+      },
+      "validated": {
+        "text": "IF(Agreement.Amount < 5000, \"Small\", IF(Agreement.Amount < 50000, \"Medium\", \"Large\"))",
+        "tries": 1,
+        "problems": [
+          []
+        ],
+        "parsed": true,
+        "correct": true,
+        "seconds": 0.4874530000000002
+      }
+    },
+    {
+      "intent": "The amount after discount, rounded to whole dollars. A blank discount means no discount.",
+      "first": {
+        "text": "ROUND(Agreement.Amount * (1 - COALESCE(Agreement.DiscountPct, 0)) / 100)",
+        "parsed": true,
+        "correct": false,
+        "failure": "on {\"Agreement.Amount\":999,\"Agreement.DiscountPct\":15} gave -140, expected 849"
+      },
+      "validated": {
+        "text": "ROUND(Agreement.Amount * (1 - COALESCE(Agreement.DiscountPct, 0)) / 100)",
+        "tries": 1,
+        "problems": [
+          []
+        ],
+        "parsed": true,
+        "correct": false,
+        "failure": "on {\"Agreement.Amount\":999,\"Agreement.DiscountPct\":15} gave -140, expected 849",
+        "seconds": 0.40331500000000003
+      }
+    },
+    {
+      "intent": "TRUE if the counterparty name contains \"gmbh\", ignoring case.",
+      "first": {
+        "text": "CONTAINS(Counterparty.Name, \"gmbh\")",
+        "parsed": true,
+        "correct": true
+      },
+      "validated": {
+        "text": "CONTAINS(Counterparty.Name, \"gmbh\")",
+        "tries": 1,
+        "problems": [
+          []
+        ],
+        "parsed": true,
+        "correct": true,
+        "seconds": 0.26103029199999994
+      }
+    },
+    {
+      "intent": "Return \"Renewal team\" if the agreement renews automatically and the term is at least 12 months, otherwise \"Account owner\". A blank term counts as under 12 months.",
+      "first": {
+        "text": "IF(AND(Agreement.AutoRenew, Agreement.TermMonths >= 12), \"Renewal team\", \"Account owner\")",
+        "parsed": true,
+        "correct": true
+      },
+      "validated": {
+        "text": "IF(AND(Agreement.AutoRenew = TRUE, COALESCE(Agreement.TermMonths, 0) >= 12), \"Renewal team\", \"Account owner\")",
+        "tries": 1,
+        "problems": [
+          []
+        ],
+        "parsed": true,
+        "correct": true,
+        "seconds": 0.609414417
+      }
+    },
+    {
+      "intent": "The signer's title in uppercase, or \"UNKNOWN\" if it is blank.",
+      "first": {
+        "text": "UPPER(COALESCE(Signer.Title, \"UNKNOWN\"))",
+        "parsed": true,
+        "correct": true
+      },
+      "validated": {
+        "text": "UPPER(COALESCE(Signer.Title, \"UNKNOWN\"))",
+        "tries": 1,
+        "problems": [
+          []
+        ],
+        "parsed": true,
+        "correct": true,
+        "seconds": 0.3081392080000005
+      }
+    },
+    {
+      "intent": "TRUE if the region is APAC or LATAM, or the counterparty is in Japan.",
+      "first": {
+        "text": "OR(Agreement.Region = \"APAC\", Agreement.Region = \"LATAM\", Counterparty.Country = \"JP\")",
+        "parsed": true,
+        "correct": true
+      },
+      "validated": {
+        "text": "OR(Agreement.Region = \"APAC\", Agreement.Region = \"LATAM\", Counterparty.Country = \"JP\")",
+        "tries": 1,
+        "problems": [
+          []
+        ],
+        "parsed": true,
+        "correct": true,
+        "seconds": 0.3755903330000001
+      }
+    },
+    {
+      "intent": "How far the amount is over the region's approval limit; 0 if it is not over.",
+      "first": {
+        "text": "IF(Agreement.Amount > LOOKUP(\"Approvers\", Agreement.Region, \"Limit\"), Agreement.Amount - LOOKUP(\"Approvers\", Agreement.Region, \"Limit\"), 0)",
+        "parsed": true,
+        "correct": true
+      },
+      "validated": {
+        "text": "IF(Agreement.Amount > LOOKUP(\"Approvers\", Agreement.Region, \"Limit\"), Agreement.Amount - LOOKUP(\"Approvers\", Agreement.Region, \"Limit\"), 0)",
+        "tries": 1,
+        "problems": [
+          []
+        ],
+        "parsed": true,
+        "correct": true,
+        "seconds": 0.6542898329999998
+      }
+    },
+    {
+      "intent": "Return \"Priority\" for strategic customers in the NA region, otherwise \"Normal\". A blank tier is not strategic.",
+      "first": {
+        "text": "IF(AND(Agreement.Region = \"NA\", Counterparty.Tier = \"Strategic\"), \"Priority\", \"Normal\")",
+        "parsed": true,
+        "correct": true
+      },
+      "validated": {
+        "text": "IF(AND(Agreement.Region = \"NA\", Counterparty.Tier = \"Strategic\"), \"Priority\", \"Normal\")",
+        "tries": 1,
+        "problems": [
+          []
+        ],
+        "parsed": true,
+        "correct": true,
+        "seconds": 0.48198675
+      }
+    },
+    {
+      "intent": "The agreement title followed by \" (\" , the term in months, and \" months)\". Use \"open-ended\" instead of the number when the term is blank.",
+      "first": {
+        "text": "CONCAT(Agreement.Title, \" (\", IF(ISBLANK(Agreement.TermMonths), \"open-ended\", TEXT(Agreement.TermMonths)), \" months)\")",
+        "parsed": true,
+        "correct": false,
+        "failure": "on {\"Agreement.Title\":\"MSA\",\"Agreement.TermMonths\":24} gave error: unknown function TEXT, expected \"MSA (24 months)\""
+      },
+      "validated": {
+        "text": "CONCAT(Agreement.Title, \" (\", IF(ISBLANK(Agreement.TermMonths), \"open-ended\", TO_TEXT(Agreement.TermMonths)), \" months)\")",
+        "tries": 3,
+        "problems": [
+          [
+            "unknown function TEXT"
+          ],
+          [
+            "unknown function STR"
+          ],
+          [
+            "unknown function TO_TEXT"
+          ]
+        ],
+        "parsed": false,
+        "correct": false,
+        "failure": "no expression",
+        "seconds": 1.8056869580000003
+      }
+    }
+  ]
+}

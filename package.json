@@ -1,0 +1,30 @@
+{
+  "name": "exprassist",
+  "version": "0.1.0",
+  "private": true,
+  "description": "An AI assistant for workflow expressions: parser, type checker, anti-pattern analyzer with semantics-verified fixes, plain-English explanations, and validated natural-language generation",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "dev": "vite web",
+    "build": "vite build web --outDir ../dist",
+    "server": "tsx src/assistant/server.ts",
+    "eval": "tsx eval/generate-eval.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5",
+    "vitest": "^5.0.5"
+  },
+  "dependencies": {
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  }
+}

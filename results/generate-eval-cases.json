@@ -1,0 +1,402 @@
+{
+  "summary": {
+    "model": "gemma4",
+    "set": "cases",
+    "cases": 20,
+    "first_answer": {
+      "parses": 18,
+      "correct": 16
+    },
+    "validated": {
+      "passes_checks": 19,
+      "correct": 18,
+      "needed_retry": 3,
+      "mean_seconds": 0.4
+    }
+  },
+  "rows": [
+    {
+      "intent": "Return \"Legal\" if the contract value is over 100,000, otherwise \"Sales\".",
+      "first": {
+        "text": "IF(Agreement.Amount > 100000, \"Legal\", \"Sales\")",
+        "parsed": true,
+        "correct": true
+      },
+      "validated": {
+        "text": "IF(Agreement.Amount > 100000, \"Legal\", \"Sales\")",
+        "tries": 1,
+        "problems": [
+          []
+        ],
+        "parsed": true,
+        "correct": true,
+        "seconds": 0.29803420900000005
+      }
+    },
+    {
+      "intent": "TRUE if the agreement is an NDA or an MSA.",
+      "first": {
+        "text": "Agreement.Type = \"NDA\" OR Agreement.Type = \"MSA\"",
+        "parsed": false,
+        "correct": false,
+        "failure": "does not parse: OR is a function here: write OR(a, b) instead of a OR b"
+      },
+      "validated": {
+        "text": "OR(Agreement.Type = \"NDA\", Agreement.Type = \"MSA\")",
+        "tries": 3,
+        "problems": [
+          [
+            "syntax error: OR is a function here: write OR(a, b) instead of a OR b at character 23"
+          ],
+          [
+            "syntax error: OR is a function here: write OR(a, b) instead of a OR b at character 23"
+          ],
+          []
+        ],
+        "parsed": true,
+        "correct": true,
+        "seconds": 1.112872209
+      }
+    },
+    {
+      "intent": "The discounted amount: the contract value minus the discount percentage. A blank discount means no discount.",
+      "first": {
+        "text": "Agreement.Amount - (Agreement.Amount * (COALESCE(Agreement.DiscountPct, 0) / 100))",
+        "parsed": true,
+        "correct": true
+      },
+      "validated": {
+        "text": "Agreement.Amount - Agreement.Amount * (COALESCE(Agreement.DiscountPct, 0) / 100)",
+        "tries": 1,
+        "problems": [
+          []
+        ],
+        "parsed": true,
+        "correct": true,
+        "seconds": 0.461337708
+      }
+    },
+    {
+      "intent": "TRUE when the counterparty is in Germany or France and the amount is at least 50,000.",
+      "first": {
+        "text": "AND(OR(Counterparty.Country = \"DE\", Counterparty.Country = \"FR\"), Agreement.Amount >= 50000)",
+        "parsed": true,
+        "correct": true
+      },
+      "validated": {
+        "text": "AND(OR(Counterparty.Country = \"DE\", Counterparty.Country = \"FR\"), Agreement.Amount >= 50000)",
+        "tries": 1,
+        "problems": [
+          []
+        ],
+        "parsed": true,
+        "correct": true,
+        "seconds": 0.49097920899999964
+      }
+    },
+    {
+      "intent": "The approver email for the agreement's region, from the Approvers table.",
+      "first": {
+        "text": "LOOKUP(\"Approvers\", Agreement.Region, \"Email\")",
+        "parsed": true,
+        "correct": true
+      },
+      "validated": {
+        "text": "LOOKUP(\"Approvers\", Agreement.Region, \"Email\")",
+        "tries": 1,
+        "problems": [
+          []
+        ],
+        "parsed": true,
+        "correct": true,
+        "seconds": 0.24088554100000056
+      }
+    },
+    {
+      "intent": "TRUE if the amount exceeds the approval limit for its region in the Approvers table.",
+      "first": {
+        "text": "Agreement.Amount > LOOKUP(\"Approvers\", Agreement.Region, \"Limit\")",
+        "parsed": true,
+        "correct": true
+      },
+      "validated": {
+        "text": "Agreement.Amount > LOOKUP(\"Approvers\", Agreement.Region, \"Limit\")",
+        "tries": 1,
+        "problems": [
+          []
+        ],
+        "parsed": true,
+        "correct": true,
+        "seconds": 0.3072251669999996
+      }
+    },
+    {
+      "intent": "The signer's email in lowercase.",
+      "first": {
+        "text": "LOWER(Signer.Email)",
+        "parsed": true,
+        "correct": true
+      },
+      "validated": {
+        "text": "LOWER(Signer.Email)",
+        "tries": 1,
+        "problems": [
+          []
+        ],
+        "parsed": true,
+        "correct": true,
+        "seconds": 0.20101908399999957
+      }
+    },
+    {
+      "intent": "TRUE if the signer's title contains \"legal\", ignoring case. FALSE if the title is blank.",
+      "first": {
+        "text": "AND(NOT(ISBLANK(Signer.Title)), CONTAINS(Signer.Title, \"legal\"))",
+        "parsed": true,
+        "correct": true
+      },
+      "validated": {
+        "text": "AND(NOT(ISBLANK(Signer.Title)), CONTAINS(Signer.Title, \"legal\"))",
+        "tries": 1,
+        "problems": [
+          []
+        ],
+        "parsed": true,
+        "correct": true,
+        "seconds": 0.38427520800000003
+      }
+    },
+    {
+      "intent": "The monthly value: the amount divided by the term in months, rounded to 2 decimal places. If the term is blank, use 12 months.",
+      "first": {
+        "text": "ROUND(Agreement.Amount / COALESCE(Agreement.TermMonths, 12), 2)",
+        "parsed": true,
+        "correct": true
+      },
+      "validated": {
+        "text": "ROUND(Agreement.Amount / COALESCE(Agreement.TermMonths, 12), 2)",
+        "tries": 1,
+        "problems": [
+          []
+        ],
+        "parsed": true,
+        "correct": true,
+        "seconds": 0.3475069999999996
+      }
+    },
+    {
+      "intent": "Return \"Strategic\" for strategic customers, \"Enterprise\" for enterprise customers, \"New\" if the tier is blank, and \"Standard\" otherwise.",
+      "first": {
+        "text": "SWITCH(Counterparty.Tier, \"Strategic\", \"Strategic\", \"Enterprise\", \"Enterprise\", \"Standard\", \"New\")",
+        "parsed": true,
+        "correct": false,
+        "failure": "on {\"Counterparty.Tier\":null} gave null, expected \"New\""
+      },
+      "validated": {
+        "text": "SWITCH(Counterparty.Tier, \"Strategic\", \"Strategic\", \"Enterprise\", \"Enterprise\", \"Standard\", \"New\")",
+        "tries": 1,
+        "problems": [
+          []
+        ],
+        "parsed": true,
+        "correct": false,
+        "failure": "on {\"Counterparty.Tier\":null} gave null, expected \"New\"",
+        "seconds": 0.382069708
+      }
+    },
+    {
+      "intent": "The number of characters in the agreement title.",
+      "first": {
+        "text": "LEN(Agreement.Title)",
+        "parsed": true,
+        "correct": true
+      },
+      "validated": {
+        "text": "LEN(Agreement.Title)",
+        "tries": 1,
+        "problems": [
+          []
+        ],
+        "parsed": true,
+        "correct": true,
+        "seconds": 0.1337088329999997
+      }
+    },
+    {
+      "intent": "TRUE if the agreement does not renew automatically.",
+      "first": {
+        "text": "NOT(Agreement.AutoRenew)",
+        "parsed": true,
+        "correct": true
+      },
+      "validated": {
+        "text": "NOT(Agreement.AutoRenew)",
+        "tries": 1,
+        "problems": [
+          []
+        ],
+        "parsed": true,
+        "correct": true,
+        "seconds": 0.17730191699999887
+      }
+    },
+    {
+      "intent": "A label like \"NDA - Acme Corp\" made from the agreement type and the counterparty name.",
+      "first": {
+        "text": "CONCAT(Agreement.Type, \" - \", Counterparty.Name)",
+        "parsed": true,
+        "correct": true
+      },
+      "validated": {
+        "text": "CONCAT(Agreement.Type, \" - \", Counterparty.Name)",
+        "tries": 1,
+        "problems": [
+          []
+        ],
+        "parsed": true,
+        "correct": true,
+        "seconds": 0.29511262499999974
+      }
+    },
+    {
+      "intent": "Return \"Review\" if the discount is over 20 percent or the amount is over 500,000, otherwise \"OK\". A blank discount means no discount.",
+      "first": {
+        "text": "IF(Agreement.DiscountPct > 20 OR Agreement.Amount > 500000, \"Review\", \"OK\")",
+        "parsed": false,
+        "correct": false,
+        "failure": "does not parse: OR is a function here: write OR(a, b) instead of a OR b"
+      },
+      "validated": {
+        "text": "IF(Agreement.DiscountPct > 20 OR Agreement.Amount > 500000, \"Review\", \"OK\")",
+        "tries": 3,
+        "problems": [
+          [
+            "syntax error: OR is a function here: write OR(a, b) instead of a OR b at character 30"
+          ],
+          [
+            "syntax error: OR is a function here: write OR(a, b) instead of a OR b at character 30"
+          ],
+          [
+            "syntax error: OR is a function here: write OR(a, b) instead of a OR b at character 30"
+          ]
+        ],
+        "parsed": false,
+        "correct": false,
+        "failure": "no expression",
+        "seconds": 1.5272716670000008
+      }
+    },
+    {
+      "intent": "The sign-off tier by amount: under 10,000 is \"Tier 1\", under 100,000 is \"Tier 2\", and anything else is \"Tier 3\".",
+      "first": {
+        "text": "SWITCH(Agreement.Amount, 10000, \"Tier 1\", 100000, \"Tier 2\", \"Tier 3\")",
+        "parsed": true,
+        "correct": false,
+        "failure": "on {\"Agreement.Amount\":9999} gave \"Tier 3\", expected \"Tier 1\""
+      },
+      "validated": {
+        "text": "IF(Agreement.Amount < 10000, \"Tier 1\", IF(Agreement.Amount < 100000, \"Tier 2\", \"Tier 3\"))",
+        "tries": 2,
+        "problems": [
+          [
+            "SWITCH only matches exact numbers; for ranges use IF with < or >"
+          ],
+          []
+        ],
+        "parsed": true,
+        "correct": true,
+        "seconds": 1.0782217500000006
+      }
+    },
+    {
+      "intent": "TRUE for agreements in the EU region whose counterparty is not in the US.",
+      "first": {
+        "text": "AND(Agreement.Region = \"EU\", Counterparty.Country <> \"US\")",
+        "parsed": true,
+        "correct": true
+      },
+      "validated": {
+        "text": "AND(Agreement.Region = \"EU\", Counterparty.Country <> \"US\")",
+        "tries": 1,
+        "problems": [
+          []
+        ],
+        "parsed": true,
+        "correct": true,
+        "seconds": 0.25059858299999904
+      }
+    },
+    {
+      "intent": "The larger of the contract value and 25,000.",
+      "first": {
+        "text": "MAX(Agreement.Amount, 25000)",
+        "parsed": true,
+        "correct": true
+      },
+      "validated": {
+        "text": "MAX(Agreement.Amount, 25000)",
+        "tries": 1,
+        "problems": [
+          []
+        ],
+        "parsed": true,
+        "correct": true,
+        "seconds": 0.1664266659999994
+      }
+    },
+    {
+      "intent": "The counterparty's tier, or \"Unknown\" when it is blank.",
+      "first": {
+        "text": "COALESCE(Counterparty.Tier, \"Unknown\")",
+        "parsed": true,
+        "correct": true
+      },
+      "validated": {
+        "text": "COALESCE(Counterparty.Tier, \"Unknown\")",
+        "tries": 1,
+        "problems": [
+          []
+        ],
+        "parsed": true,
+        "correct": true,
+        "seconds": 0.20793983299999855
+      }
+    },
+    {
+      "intent": "TRUE if the term is longer than 36 months. A blank term counts as not longer.",
+      "first": {
+        "text": "Agreement.TermMonths > 36",
+        "parsed": true,
+        "correct": true
+      },
+      "validated": {
+        "text": "Agreement.TermMonths > 36",
+        "tries": 1,
+        "problems": [
+          []
+        ],
+        "parsed": true,
+        "correct": true,
+        "seconds": 0.1658369590000002
+      }
+    },
+    {
+      "intent": "The region's approver email if the amount is over the region's approval limit, otherwise \"auto-approved\".",
+      "first": {
+        "text": "IF(Agreement.Amount > LOOKUP(\"Approvers\", Agreement.Region, \"Limit\"), LOOKUP(\"Approvers\", Agreement.Region, \"Email\"), \"auto-approved\")",
+        "parsed": true,
+        "correct": true
+      },
+      "validated": {
+        "text": "IF(Agreement.Amount > LOOKUP(\"Approvers\", Agreement.Region, \"Limit\"), LOOKUP(\"Approvers\", Agreement.Region, \"Email\"), \"auto-approved\")",
+        "tries": 1,
+        "problems": [
+          []
+        ],
+        "parsed": true,
+        "correct": true,
+        "seconds": 0.5559217499999995
+      }
+    }
+  ]
+}
